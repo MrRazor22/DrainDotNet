@@ -403,15 +403,20 @@ namespace DrainDotNet
             var content = row.ContainsKey("Content") ? row["Content"] : "";
             var templateRegex = Regex.Replace(template, "<.{1,5}>", "<*>");
             if (!templateRegex.Contains("<*>")) return new List<string>();
+
+            // escape metacharacters, then make spaces flexible and turn <*> into a capture group
             templateRegex = Regex.Escape(templateRegex);
-            templateRegex = Regex.Replace(templateRegex, @"\\s+", "\\s+");
-            templateRegex = "^" + templateRegex.Replace("\\<\\*\\>", "(.*?)") + "$";
+            templateRegex = templateRegex.Replace(" ", "\\s+");                  // make spaces \s+
+            templateRegex = templateRegex.Replace(Regex.Escape("<*>"), "(.*?)"); // replace escaped <*> with capture
+            templateRegex = "^" + templateRegex + "$";
+
             var m = Regex.Match(content, templateRegex);
             if (!m.Success) return new List<string>();
             var groups = new List<string>();
             for (int i = 1; i < m.Groups.Count; i++) groups.Add(m.Groups[i].Value);
             return groups;
         }
+
     }
 
     // USAGE example (call from Main):
