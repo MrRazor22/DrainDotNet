@@ -403,23 +403,33 @@ namespace DrainDotNet
 
         private List<string> GetParameterList(Dictionary<string, string> row)
         {
-            var template = row.ContainsKey("EventTemplate") ? row["EventTemplate"] : "";
-            var content = row.ContainsKey("Content") ? row["Content"] : "";
-            var templateRegex = Regex.Replace(template, "<.{1,5}>", "<*>");
+            string template = row.ContainsKey("EventTemplate") ? row["EventTemplate"] : "";
+            string content = row.ContainsKey("Content") ? row["Content"] : "";
+
+            // 1) normalize <...> tokens to <*> (same as Python: re.sub(r"<.{1,5}>", "<*>", ...))
+            string templateRegex = Regex.Replace(template, "<.{1,5}>", "<*>");
+
             if (!templateRegex.Contains("<*>")) return new List<string>();
 
-            // escape metacharacters, then make spaces flexible and turn <*> into a capture group
-            templateRegex = Regex.Escape(templateRegex);
-            templateRegex = templateRegex.Replace(" ", "\\s+");                  // make spaces \s+
-            templateRegex = templateRegex.Replace(Regex.Escape("<*>"), "(.*?)"); // replace escaped <*> with capture
-            templateRegex = "^" + templateRegex + "$";
+            // 2) escape non-alphanumeric exactly like Python: re.sub(r"([^A-Za-z0-9])", r"\\\1", ...)
+            // In C# replacement string needs "\\\\" to produce a single backslash in the final regex,
+            // so we use "\\\\$1" here (string literal uses double backslashes).
+            templateRegex = Regex.Replace(templateRegex, "([^A-Za-z0-9])", "\\\\$1");
+
+            // 3) convert escaped spaces ("\ ") into \s+ (flexible whitespace) — same as Python r"\\ +" -> r"\\s+"
+            templateRegex = Regex.Replace(templateRegex, @"\\ +", @"\\s+");
+
+            // 4) replace escaped <*> (which is "\<\*\>") with a non-greedy capture group (.*?)
+            templateRegex = "^" + templateRegex.Replace(@"\<\*\>", "(.*?)") + "$";
 
             var m = Regex.Match(content, templateRegex);
             if (!m.Success) return new List<string>();
-            var groups = new List<string>();
-            for (int i = 1; i < m.Groups.Count; i++) groups.Add(m.Groups[i].Value);
-            return groups;
+
+            var result = new List<string>();
+            for (int i = 1; i < m.Groups.Count; i++) result.Add(m.Groups[i].Value);
+            return result;
         }
+
 
     }
 
