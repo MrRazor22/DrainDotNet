@@ -341,9 +341,31 @@ namespace DrainDotNet
                 else
                 {
                     var newTemplate = GetTemplate(tokens, matchCluster.LogTemplate);
-                    matchCluster.LogIDL.Add(logID);
-                    if (string.Join(" ", newTemplate) != string.Join(" ", matchCluster.LogTemplate))
-                        matchCluster.LogTemplate = newTemplate;
+
+                    bool hasStaticMismatch = false;
+                    for (int i = 0; i < Math.Min(tokens.Count, matchCluster.LogTemplate.Count); i++)
+                    {
+                        string t1 = matchCluster.LogTemplate[i];
+                        string t2 = tokens[i];
+
+                        if ((MatchesRexToSkip(t1) || MatchesRexToSkip(t2)) && t1 != t2)//create new branch if different and matches no rex patterns provided 
+                        {
+                            hasStaticMismatch = true;
+                            break;
+                        }
+                    }
+                    if (hasStaticMismatch)
+                    {
+                        var newCluster = new LogCluster(tokens, new List<int> { logID });
+                        logCluL.Add(newCluster);
+                        AddSeqToPrefixTree(rootNode, newCluster);
+                    }
+                    else
+                    {
+                        matchCluster.LogIDL.Add(logID);
+                        if (string.Join(" ", newTemplate) != string.Join(" ", matchCluster.LogTemplate))
+                            matchCluster.LogTemplate = newTemplate;
+                    }
                 }
                 count++;
                 if (count % 1000 == 0 || count == DfLog.Count)
