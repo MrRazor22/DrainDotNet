@@ -1,6 +1,6 @@
 ﻿# DrainDotNet
 
-DrainDotNet is a C# port of the popular Drain log parser, with several improvements to make it faster, more reliable, and more user-friendly. It takes raw logs and automatically groups them into templates so you can easily see log patterns.
+DrainDotNet is a C# port and improvement of [LogPai’s Drain log parser](https://github.com/logpai/logparser), with several improvements to make it faster, more reliable, and more user-friendly. It takes raw logs and automatically groups them into templates so you can easily see log patterns.
 
 ## Key Improvements over the original Drain
 - **UniqueEventPatterns**: You can provide regex patterns that mark certain tokens as *important*. If a log contains these tokens and they change, DrainDotNet will always create a new event/template instead of merging them. This gives you more control over clustering.
@@ -30,8 +30,7 @@ DrainDotNet is a C# port of the popular Drain log parser, with several improveme
 	// Parse logs but keep results in memory only
 	var parsedInMemory = parser.Parse("HDFS.log", autoSave: false);
 	```
-
-
+ 
 
 ## License
 Apache 2.0 (same as the original Drain).
