@@ -357,9 +357,13 @@ namespace DrainDotNet
                 try
                 {
                     var m = regex.Match(line.Trim());
-                    if (!m.Success) { Console.WriteLine("[Warning] Skip line: " + line); continue; }
+                    if (!m.Success || m.Groups.Count == 0) { Console.WriteLine("[Warning] Skip line: " + line); continue; }
                     var map = new Dictionary<string, string>();
-                    foreach (var h in headers) map[h] = m.Groups[h].Value;
+                    foreach (var h in headers)
+                    {
+                        if (m.Groups[h].Success) map[h] = m.Groups[h].Value;
+                        else map[h] = "";
+                    }
                     linecount++;
                     map["LineId"] = linecount.ToString();
                     messages.Add(map);
