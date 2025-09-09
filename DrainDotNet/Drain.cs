@@ -442,7 +442,7 @@ namespace DrainDotNet
             return (headers, regex);
         }
 
-        private List<string> GetParameterList(Dictionary<string, string> row)
+        private List<string> GetParameterListRegexBased(Dictionary<string, string> row)
         {
             string template = row.ContainsKey("EventTemplate") ? row["EventTemplate"] : "";
             string content = row.ContainsKey("Content") ? row["Content"] : "";
@@ -469,6 +469,32 @@ namespace DrainDotNet
             var result = new List<string>();
             for (int i = 1; i < m.Groups.Count; i++) result.Add(m.Groups[i].Value);
             return result;
+        }
+
+        //simpler robust faster version
+        private List<string> GetParameterList(Dictionary<string, string> row)
+        {
+            var parameters = new List<string>();
+            if (!row.ContainsKey("EventTemplate") || !row.ContainsKey("Content")) return parameters;
+
+            var templateTokens = row["EventTemplate"].Split();
+            var contentTokens = row["Content"].Split();
+
+            for (int i = 0; i < templateTokens.Length; i++)
+            {
+                var tmpltoken = templateTokens[i];
+                var contentToken = contentTokens[i];
+                if (tmpltoken == "<*>") parameters.Add(contentToken);
+                else if (tmpltoken.Contains("<*>")) parameters.Add(CleanParams(tmpltoken, contentToken));
+            }
+            return parameters;
+        }
+
+        private string CleanParams(string tmplToken, string msgToken)
+        {
+            var pattern = Regex.Escape(tmplToken).Replace(Regex.Escape("<*>"), "(.+?)");
+            var match = Regex.Match(msgToken, $"^{pattern}$");
+            return match.Success ? match.Groups[1].Value : msgToken;
         }
     }
 
