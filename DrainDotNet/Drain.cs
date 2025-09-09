@@ -235,7 +235,7 @@ namespace DrainDotNet
         {
             Directory.CreateDirectory(SavePath);
             // structured CSV
-            var structuredPath = Path.Combine(SavePath, LogName + "_structured.csv");
+            var structuredPath = Path.Combine(SavePath, logName + "_structured.csv");
             using (var w = new StreamWriter(structuredPath))
             {
                 var headers = new List<string> { "LineId", "EventId", "EventTemplate", "Content", "ParameterList" }
@@ -458,8 +458,8 @@ namespace DrainDotNet
             if (string.IsNullOrEmpty(template) || string.IsNullOrEmpty(content))
                 return parameters;
 
-            var templateTokens = template.Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
-            var contentTokens = content.Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
+            var templateTokens = template.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries); ;
+            var contentTokens = content.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
 
             if (templateTokens.Length != contentTokens.Length)
                 return parameters; // mismatch, skip
@@ -488,8 +488,4 @@ namespace DrainDotNet
             return match.Success ? match.Groups[1].Value : msgToken;
         }
     }
-
-    // USAGE example (call from Main):
-    // var parser = new LogParser("<Date> <Time> <Level> <Content>", indir: "./logs/", outdir: "./out/", depth:4);
-    // parser.Parse("syslog.txt"); 
 }
