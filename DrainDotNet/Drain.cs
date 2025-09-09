@@ -54,7 +54,7 @@ namespace DrainDotNet
         private int MaxChild;
         private string LogName;
         private string SavePath;
-        private List<Dictionary<string, string>> DfLog; // each row is a map header->value
+        private List<ParsedLog> ParsedLogs;
         private string LogFormat;
         private List<string> Rex;
         private List<string> UniqueEventPatterns;
@@ -231,72 +231,58 @@ namespace DrainDotNet
             return result;
         }
 
-        private void OutputResult(List<LogCluster> logCluL)
+        private void OutputResult(List<LogCluster> logCluL, List<ParsedLog> parsedLogs)
         {
-            var templates = new string[DfLog.Count];
-            var templateIds = new string[DfLog.Count];
-            var dfEvents = new List<string[]>();
-            for (int i = 0; i < logCluL.Count; i++)
+            foreach (var cluster in logCluL)
             {
-                var lc = logCluL[i];
-                var templateStr = string.Join(" ", lc.LogTemplate);
-                var occurrence = lc.LogIDL.Count;
+                var templateStr = string.Join(" ", cluster.LogTemplate);
                 var templateId = MD5Short(templateStr);
-                foreach (var id in lc.LogIDL)
-                {
-                    int idx = id - 1;
-                    templates[idx] = templateStr;
-                    templateIds[idx] = templateId;
-                }
-                dfEvents.Add(new[] { templateId, templateStr, occurrence.ToString() });
-            }
 
-            // attach to DfLog
-            for (int i = 0; i < DfLog.Count; i++)
-            {
-                DfLog[i]["EventId"] = templateIds[i];
-                DfLog[i]["EventTemplate"] = templates[i];
-                if (KeepPara)
+                foreach (var logId in cluster.LogIDL)
                 {
-                    DfLog[i]["ParameterList"] = string.Join("|", GetParameterList(DfLog[i]));
+                    var log = parsedLogs.First(l => l.LineId == logId);
+                    log.EventId = templateId;
+                    log.EventTemplate = templateStr;
+                    if (KeepPara && (log.ParameterList == null || log.ParameterList.Count == 0))
+                        log.ParameterList = GetParameterListFromTemplate(log.EventTemplate, log.Content);
                 }
             }
 
-            Directory.CreateDirectory(SavePath);
-            // write structured csv
-            WriteCsv(Path.Combine(SavePath, LogName + "_structured.csv"), DfLog);
-
-            // build templates CSV
-            var occDict = DfLog.GroupBy(r => r["EventTemplate"]).ToDictionary(g => g.Key, g => g.Count());
-            var uniqueTemplates = DfLog.Select(r => r["EventTemplate"]).Distinct().ToList();
-            var rows = new List<string[]>();
-            foreach (var t in uniqueTemplates)
+            // structured CSV
+            var structuredPath = Path.Combine(SavePath, LogName + "_structured.csv");
+            using (var w = new StreamWriter(structuredPath))
             {
-                var id = MD5Short(t);
-                rows.Add(new[] { id, t, occDict.ContainsKey(t) ? occDict[t].ToString() : "0" });
-            }
-            WriteCsv(Path.Combine(SavePath, LogName + "_templates.csv"), rows, new[] { "EventId", "EventTemplate", "Occurrences" });
-        }
-
-        private void WriteCsv(string path, List<Dictionary<string, string>> data)
-        {
-            var headers = data.SelectMany(d => d.Keys).Distinct().ToList();
-            using (var w = new StreamWriter(path))
-            {
+                var headers = new List<string> { "LineId", "EventId", "EventTemplate", "Content", "ParameterList" }
+                              .Concat(parsedLogs.SelectMany(l => l.ExtraFields.Keys).Distinct()).ToList();
                 w.WriteLine(string.Join(",", headers.Select(EscapeCsv)));
-                foreach (var row in data)
+
+                foreach (var log in parsedLogs)
                 {
-                    w.WriteLine(string.Join(",", headers.Select(h => EscapeCsv(row.ContainsKey(h) ? row[h] : ""))));
+                    var row = new List<string>
+            {
+                log.LineId.ToString(),
+                log.EventId,
+                log.EventTemplate,
+                log.Content,
+                string.Join("|", log.ParameterList)
+            };
+                    row.AddRange(headers.Skip(5).Select(h => log.ExtraFields.ContainsKey(h) ? log.ExtraFields[h] : ""));
+                    w.WriteLine(string.Join(",", row.Select(EscapeCsv)));
                 }
             }
-        }
 
-        private void WriteCsv(string path, List<string[]> rows, string[] headers)
-        {
-            using (var w = new StreamWriter(path))
+            // templates CSV
+            var templateCounts = parsedLogs.GroupBy(l => l.EventTemplate)
+                                           .ToDictionary(g => g.Key, g => g.Count());
+            var templatePath = Path.Combine(SavePath, LogName + "_templates.csv");
+            using (var w = new StreamWriter(templatePath))
             {
-                w.WriteLine(string.Join(",", headers.Select(EscapeCsv)));
-                foreach (var r in rows) w.WriteLine(string.Join(",", r.Select(EscapeCsv)));
+                w.WriteLine("EventId,EventTemplate,Occurrences");
+                foreach (var kv in templateCounts)
+                {
+                    var id = MD5Short(kv.Key);
+                    w.WriteLine($"{id},{EscapeCsv(kv.Key)},{kv.Value}");
+                }
             }
         }
 
@@ -335,15 +321,14 @@ namespace DrainDotNet
 
             LoadData();
             int count = 0;
-            foreach (var row in DfLog)
+            foreach (var row in ParsedLogs)
             {
-                int logID = int.Parse(row["LineId"]);
-                var content = Preprocess(row.ContainsKey("Content") ? row["Content"] : row.Values.Last());
+                var content = Preprocess(row.Content);
                 var tokens = content.Trim().Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries).ToList();
                 var matchCluster = TreeSearch(rootNode, tokens);
                 if (matchCluster == null)
                 {
-                    var newCluster = new LogCluster(tokens, new List<int> { logID });
+                    var newCluster = new LogCluster(tokens, new List<int> { row.LineId });
                     logCluL.Add(newCluster);
                     AddSeqToPrefixTree(rootNode, newCluster);
                 }
@@ -365,63 +350,33 @@ namespace DrainDotNet
                     }
                     if (hasStaticMismatch)
                     {
-                        var newCluster = new LogCluster(tokens, new List<int> { logID });
+                        var newCluster = new LogCluster(tokens, new List<int> { row.LineId });
                         logCluL.Add(newCluster);
                         AddSeqToPrefixTree(rootNode, newCluster);
                     }
                     else
                     {
-                        matchCluster.LogIDL.Add(logID);
-                        if (string.Join(" ", newTemplate) != string.Join(" ", matchCluster.LogTemplate))
+                        matchCluster.LogIDL.Add(row.LineId);
+                        if (!newTemplate.SequenceEqual(matchCluster.LogTemplate))
                             matchCluster.LogTemplate = newTemplate;
                     }
                 }
                 count++;
-                if (count % 1000 == 0 || count == DfLog.Count)
-                    Console.WriteLine($"Processed {count * 100.0 / DfLog.Count:0.0}% of log lines.");
+                if (count % 1000 == 0 || count == ParsedLogs.Count)
+                    Console.WriteLine($"Processed {count * 100.0 / ParsedLogs.Count:0.0}% of log lines.");
             }
 
-            if (!Directory.Exists(SavePath)) Directory.CreateDirectory(SavePath);
-            OutputResult(logCluL);
+            Directory.CreateDirectory(SavePath);
+            OutputResult(logCluL, ParsedLogs);
             Console.WriteLine($"Parsing done. [Time taken: {DateTime.Now - start}]");
-            List<ParsedLog> parsed = ToParsedLogs(DfLog);
-            return parsed;
-        }
-        private List<ParsedLog> ToParsedLogs(List<Dictionary<string, string>> DfLog)
-        {
-            // Convert DfLog dictionaries into strongly typed ParsedLog objects
-            var parsed = new List<ParsedLog>();
-            foreach (var row in DfLog)
-            {
-                var log = new ParsedLog
-                {
-                    LineId = int.Parse(row["LineId"]),
-                    EventId = row.ContainsKey("EventId") ? row["EventId"] : "",
-                    EventTemplate = row.ContainsKey("EventTemplate") ? row["EventTemplate"] : "",
-                    Content = row.ContainsKey("Content") ? row["Content"] : "",
-                    ParameterList = row.ContainsKey("ParameterList")
-                        ? row["ParameterList"].Split('|').ToList()
-                        : new List<string>()
-                };
 
-                // Add everything else into ExtraFields
-                foreach (var kv in row)
-                {
-                    if (kv.Key is "LineId" or "EventId" or "EventTemplate" or "Content" or "ParameterList")
-                        continue;
-                    log.ExtraFields[kv.Key] = kv.Value;
-                }
-
-                parsed.Add(log);
-            }
-
-            return parsed;
+            return ParsedLogs;
         }
 
         private void LoadData()
         {
             var (headers, regex) = GenerateLogformatRegex(LogFormat);
-            DfLog = LogToDataframe(System.IO.Path.Combine(PathIn, LogName), regex, headers);
+            ParsedLogs = LogToParsedLogs(Path.Combine(PathIn, LogName), regex, headers);
         }
 
         private string Preprocess(string line)
@@ -430,33 +385,43 @@ namespace DrainDotNet
             return line;
         }
 
-        private List<Dictionary<string, string>> LogToDataframe(string logFile, Regex regex, List<string> headers)
+        private List<ParsedLog> LogToParsedLogs(string logFile, Regex regex, List<string> headers)
         {
-            var messages = new List<Dictionary<string, string>>();
+            var logs = new List<ParsedLog>();
             int linecount = 0;
             foreach (var line in File.ReadLines(logFile))
             {
                 try
                 {
                     var m = regex.Match(line.Trim());
-                    if (!m.Success || m.Groups.Count == 0) { Console.WriteLine("[Warning] Skip line: " + line); continue; }
-                    var map = new Dictionary<string, string>();
+                    if (!m.Success || m.Groups.Count == 0)
+                    {
+                        Console.WriteLine("[Warning] Skip line: " + line);
+                        continue;
+                    }
+
+                    var log = new ParsedLog
+                    {
+                        LineId = ++linecount,
+                        Content = m.Groups["Content"].Success ? m.Groups["Content"].Value : ""
+                    };
+
+                    // put all other headers into ExtraFields
                     foreach (var h in headers)
                     {
-                        if (m.Groups[h].Success) map[h] = m.Groups[h].Value;
-                        else map[h] = "";
+                        if (h == "Content") continue;
+                        log.ExtraFields[h] = m.Groups[h].Success ? m.Groups[h].Value : "";
                     }
-                    linecount++;
-                    map["LineId"] = linecount.ToString();
-                    messages.Add(map);
+
+                    logs.Add(log);
                 }
-                catch (Exception)
+                catch
                 {
                     Console.WriteLine("[Warning] Skip line: " + line);
                 }
             }
-            Console.WriteLine("Total lines: " + messages.Count);
-            return messages;
+            Console.WriteLine("Total lines: " + logs.Count);
+            return logs;
         }
 
         private (List<string> headers, Regex regex) GenerateLogformatRegex(string logformat)
@@ -483,50 +448,32 @@ namespace DrainDotNet
             return (headers, regex);
         }
 
-        private List<string> GetParameterListRegexBased(Dictionary<string, string> row)
-        {
-            string template = row.ContainsKey("EventTemplate") ? row["EventTemplate"] : "";
-            string content = row.ContainsKey("Content") ? row["Content"] : "";
-
-            // 1) normalize <...> tokens to <*> (same as Python: re.sub(r"<.{1,5}>", "<*>", ...))
-            string templateRegex = Regex.Replace(template, "<.{1,5}>", "<*>");
-
-            if (!templateRegex.Contains("<*>")) return new List<string>();
-
-            // 2) escape non-alphanumeric exactly like Python: re.sub(r"([^A-Za-z0-9])", r"\\\1", ...)
-            // In C# replacement string needs "\\\\" to produce a single backslash in the final regex,
-            // so we use "\\\\$1" here (string literal uses double backslashes).
-            templateRegex = Regex.Replace(templateRegex, "([^A-Za-z0-9])", "\\\\$1");
-
-            // 3) convert escaped spaces ("\ ") into \s+ (flexible whitespace) — same as Python r"\\ +" -> r"\\s+"
-            templateRegex = Regex.Replace(templateRegex, @"\\ +", @"\\s+");
-
-            // 4) replace escaped <*> (which is "\<\*\>") with a non-greedy capture group (.*?)
-            templateRegex = "^" + templateRegex.Replace(@"\<\*\>", "(.*?)") + "$";
-
-            var m = Regex.Match(content, templateRegex);
-            if (!m.Success) return new List<string>();
-
-            var result = new List<string>();
-            for (int i = 1; i < m.Groups.Count; i++) result.Add(m.Groups[i].Value);
-            return result;
-        }
-
         //simpler robust faster version
-        private List<string> GetParameterList(Dictionary<string, string> row)
+        private List<string> GetParameterListFromTemplate(string template, string content)
         {
             var parameters = new List<string>();
-            if (!row.ContainsKey("EventTemplate") || !row.ContainsKey("Content")) return parameters;
+            if (string.IsNullOrEmpty(template) || string.IsNullOrEmpty(content))
+                return parameters;
 
-            var templateTokens = row["EventTemplate"].Split();
-            var contentTokens = row["Content"].Split();
+            var templateTokens = template.Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
+            var contentTokens = content.Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
+
+            if (templateTokens.Length != contentTokens.Length)
+                return parameters; // mismatch, skip
 
             for (int i = 0; i < templateTokens.Length; i++)
             {
-                var tmpltoken = templateTokens[i];
+                var tmplToken = templateTokens[i];
                 var contentToken = contentTokens[i];
-                if (tmpltoken == "<*>") parameters.Add(contentToken);
-                else if (tmpltoken.Contains("<*>")) parameters.Add(CleanParams(tmpltoken, contentToken));
+
+                if (tmplToken == "<*>")
+                {
+                    parameters.Add(contentToken);
+                }
+                else if (tmplToken.Contains("<*>"))
+                {
+                    parameters.Add(CleanParams(tmplToken, contentToken));
+                }
             }
             return parameters;
         }
@@ -541,6 +488,5 @@ namespace DrainDotNet
 
     // USAGE example (call from Main):
     // var parser = new LogParser("<Date> <Time> <Level> <Content>", indir: "./logs/", outdir: "./out/", depth:4);
-    // parser.Parse("syslog.txt");
-
+    // parser.Parse("syslog.txt"); 
 }
