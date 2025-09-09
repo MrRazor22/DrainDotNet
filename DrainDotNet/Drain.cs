@@ -36,6 +36,15 @@ namespace DrainDotNet
             DigitOrToken = digitOrToken;
         }
     }
+    public class ParsedLog
+    {
+        public int LineId { get; set; }
+        public string EventId { get; set; }
+        public string EventTemplate { get; set; }
+        public string Content { get; set; }
+        public List<string> ParameterList { get; set; } = new();
+        public Dictionary<string, string> ExtraFields { get; set; } = new();
+    }
 
     public class LogParser
     {
@@ -316,9 +325,9 @@ namespace DrainDotNet
                 if (kv.Value is Node child) PrintTree(child, dep + 1);
         }
 
-        public void Parse(string logName)
+        public List<ParsedLog> Parse(string logName)
         {
-            Console.WriteLine("Parsing file: " + System.IO.Path.Combine(PathIn, logName));
+            Console.WriteLine("Parsing file: " + Path.Combine(PathIn, logName));
             var start = DateTime.Now;
             LogName = logName;
             var rootNode = new Node();
@@ -375,6 +384,38 @@ namespace DrainDotNet
             if (!Directory.Exists(SavePath)) Directory.CreateDirectory(SavePath);
             OutputResult(logCluL);
             Console.WriteLine($"Parsing done. [Time taken: {DateTime.Now - start}]");
+            List<ParsedLog> parsed = ToParsedLogs(DfLog);
+            return parsed;
+        }
+        private List<ParsedLog> ToParsedLogs(List<Dictionary<string, string>> DfLog)
+        {
+            // Convert DfLog dictionaries into strongly typed ParsedLog objects
+            var parsed = new List<ParsedLog>();
+            foreach (var row in DfLog)
+            {
+                var log = new ParsedLog
+                {
+                    LineId = int.Parse(row["LineId"]),
+                    EventId = row.ContainsKey("EventId") ? row["EventId"] : "",
+                    EventTemplate = row.ContainsKey("EventTemplate") ? row["EventTemplate"] : "",
+                    Content = row.ContainsKey("Content") ? row["Content"] : "",
+                    ParameterList = row.ContainsKey("ParameterList")
+                        ? row["ParameterList"].Split('|').ToList()
+                        : new List<string>()
+                };
+
+                // Add everything else into ExtraFields
+                foreach (var kv in row)
+                {
+                    if (kv.Key is "LineId" or "EventId" or "EventTemplate" or "Content" or "ParameterList")
+                        continue;
+                    log.ExtraFields[kv.Key] = kv.Value;
+                }
+
+                parsed.Add(log);
+            }
+
+            return parsed;
         }
 
         private void LoadData()
