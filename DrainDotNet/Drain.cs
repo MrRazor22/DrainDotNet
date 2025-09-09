@@ -48,10 +48,10 @@ namespace DrainDotNet
         private List<Dictionary<string, string>> DfLog; // each row is a map header->value
         private string LogFormat;
         private List<string> Rex;
-        private List<string> RexToSkip;
+        private List<string> UniqueEventPatterns;
         private bool KeepPara;
 
-        public LogParser(string log_format, string indir = "./", string outdir = "./result/", int depth = 4, double st = 0.4, int maxChild = 100, List<string> rex = null, List<string> rexToSkip = null, bool keep_para = true)
+        public LogParser(string log_format, string indir = "./", string outdir = "./result/", int depth = 4, double st = 0.4, int maxChild = 100, List<string> rex = null, List<string> uniqueEventPatterns = null, bool keep_para = true)
         {
             PathIn = indir;
             Depth = Math.Max(1, depth - 2);
@@ -60,7 +60,7 @@ namespace DrainDotNet
             SavePath = outdir;
             LogFormat = log_format;
             Rex = rex ?? new List<string>();
-            RexToSkip = rexToSkip ?? new List<string>();
+            UniqueEventPatterns = uniqueEventPatterns ?? new List<string>();
             KeepPara = keep_para;
         }
 
@@ -169,9 +169,9 @@ namespace DrainDotNet
             }
         }
 
-        private bool MatchesRexToSkip(string token)
+        private bool MatchesUniqueEventPatterns(string token)
         {
-            foreach (var pattern in RexToSkip)
+            foreach (var pattern in UniqueEventPatterns)
                 if (Regex.Match(token, pattern).Success) return true;
             return false;
         }
@@ -185,7 +185,7 @@ namespace DrainDotNet
                 var token1 = seq1[i]; var token2 = seq2[i];
                 if (token1 == "<*>")
                 {
-                    if (MatchesRexToSkip(token2)) return (0.0, int.MaxValue);
+                    if (MatchesUniqueEventPatterns(token2)) return (0.0, int.MaxValue);
                     numOfPar++; continue;
                 }
                 if (token1 == token2) simTokens++;
@@ -216,7 +216,7 @@ namespace DrainDotNet
             {
                 var token1 = seq1[i]; var token2 = seq2[i];
                 if (token1 == token2) result.Add(token1);
-                else if (MatchesRexToSkip(token1) || MatchesRexToSkip(token2)) result.Add(seq2[i]);
+                else if (MatchesUniqueEventPatterns(token1) || MatchesUniqueEventPatterns(token2)) result.Add(seq2[i]);
                 else result.Add("<*>");
             }
             return result;
@@ -348,7 +348,7 @@ namespace DrainDotNet
                         string t1 = matchCluster.LogTemplate[i];
                         string t2 = tokens[i];
 
-                        if ((MatchesRexToSkip(t1) || MatchesRexToSkip(t2)) && t1 != t2)//create new branch if different and matches no rex patterns provided 
+                        if ((MatchesUniqueEventPatterns(t1) || MatchesUniqueEventPatterns(t2)) && t1 != t2)//create new branch if different and matches no rex patterns provided 
                         {
                             hasStaticMismatch = true;
                             break;
