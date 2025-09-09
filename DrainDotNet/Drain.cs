@@ -231,23 +231,9 @@ namespace DrainDotNet
             return result;
         }
 
-        private void OutputResult(List<LogCluster> logCluL, List<ParsedLog> parsedLogs)
+        private void SaveResults(List<ParsedLog> parsedLogs, string logName)
         {
-            foreach (var cluster in logCluL)
-            {
-                var templateStr = string.Join(" ", cluster.LogTemplate);
-                var templateId = MD5Short(templateStr);
-
-                foreach (var logId in cluster.LogIDL)
-                {
-                    var log = parsedLogs.First(l => l.LineId == logId);
-                    log.EventId = templateId;
-                    log.EventTemplate = templateStr;
-                    if (KeepPara && (log.ParameterList == null || log.ParameterList.Count == 0))
-                        log.ParameterList = GetParameterListFromTemplate(log.EventTemplate, log.Content);
-                }
-            }
-
+            Directory.CreateDirectory(SavePath);
             // structured CSV
             var structuredPath = Path.Combine(SavePath, LogName + "_structured.csv");
             using (var w = new StreamWriter(structuredPath))
@@ -286,6 +272,24 @@ namespace DrainDotNet
             }
         }
 
+        private void EnrichLogsWithEventIdTemplateParameters(List<LogCluster> logCluL, List<ParsedLog> parsedLogs)
+        {
+            foreach (var cluster in logCluL)
+            {
+                var templateStr = string.Join(" ", cluster.LogTemplate);
+                var templateId = MD5Short(templateStr);
+
+                foreach (var logId in cluster.LogIDL)
+                {
+                    var log = parsedLogs.First(l => l.LineId == logId);
+                    log.EventId = templateId;
+                    log.EventTemplate = templateStr;
+                    if (KeepPara && (log.ParameterList == null || log.ParameterList.Count == 0))
+                        log.ParameterList = GetParameterListFromTemplate(log.EventTemplate, log.Content);
+                }
+            }
+        }
+
         private string EscapeCsv(string v) => '"' + v.Replace("\"", "\"\"") + '"';
 
         private string MD5Short(string input)
@@ -311,7 +315,7 @@ namespace DrainDotNet
                 if (kv.Value is Node child) PrintTree(child, dep + 1);
         }
 
-        public List<ParsedLog> Parse(string logName)
+        public List<ParsedLog> Parse(string logName, bool autoSave = true)
         {
             Console.WriteLine("Parsing file: " + Path.Combine(PathIn, logName));
             var start = DateTime.Now;
@@ -365,9 +369,8 @@ namespace DrainDotNet
                 if (count % 1000 == 0 || count == ParsedLogs.Count)
                     Console.WriteLine($"Processed {count * 100.0 / ParsedLogs.Count:0.0}% of log lines.");
             }
-
-            Directory.CreateDirectory(SavePath);
-            OutputResult(logCluL, ParsedLogs);
+            EnrichLogsWithEventIdTemplateParameters(logCluL, ParsedLogs);
+            if (autoSave) SaveResults(ParsedLogs, logName);
             Console.WriteLine($"Parsing done. [Time taken: {DateTime.Now - start}]");
 
             return ParsedLogs;
