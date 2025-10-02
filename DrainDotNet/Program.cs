@@ -27,6 +27,9 @@
 
             var parser = new LogParser(logFormat, indir: inputDir, outdir: outputDir, depth: depth, st: st, rex: regex);
             parser.Parse(logFile);
+
+            var reloaded = parser.ReloadResults(logFile);
+            Console.WriteLine($"Reloaded {reloaded.Count} logs.");
         }
     }
 }
