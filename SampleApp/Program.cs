@@ -1,4 +1,9 @@
-﻿namespace DrainDotNet
+﻿using DrainDotNet;
+using System;
+using System.Collections.Generic;
+using System.IO;
+
+namespace SampleApp
 {
     internal class Program
     {

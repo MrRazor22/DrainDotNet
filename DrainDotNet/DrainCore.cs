@@ -65,8 +65,8 @@ namespace DrainDotNet
         public string EventId { get; set; }
         public string EventTemplate { get; set; }
         public string Content { get; set; }
-        public List<string> ParameterList { get; set; } = new();
-        public Dictionary<string, string> ExtraFields { get; set; } = new();
+        public List<string> ParameterList { get; set; } = new List<string>();
+        public Dictionary<string, string> ExtraFields { get; set; } = new Dictionary<string, string>();
     }
     #endregion
 

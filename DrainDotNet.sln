@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36414.22 d17.14
+VisualStudioVersion = 17.14.36414.22
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrainDotNet", "DrainDotNet\DrainDotNet.csproj", "{EC4B35BB-50B2-43B7-9945-D2FA22E8667D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleApp", "SampleApp\SampleApp.csproj", "{B9416633-1EFC-481B-886E-B5A6C0BDD78C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{EC4B35BB-50B2-43B7-9945-D2FA22E8667D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EC4B35BB-50B2-43B7-9945-D2FA22E8667D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EC4B35BB-50B2-43B7-9945-D2FA22E8667D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B9416633-1EFC-481B-886E-B5A6C0BDD78C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B9416633-1EFC-481B-886E-B5A6C0BDD78C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B9416633-1EFC-481B-886E-B5A6C0BDD78C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B9416633-1EFC-481B-886E-B5A6C0BDD78C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
