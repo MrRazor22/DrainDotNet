@@ -5,10 +5,62 @@
 		<LangVersion>8.0</LangVersion>
 		<Nullable>enable</Nullable>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+
+		<!-- NuGet metadata -->
+		<PackageId>DrainDotNet</PackageId>
+		<Version>1.0.0</Version>
+		<Authors>mrrazor22</Authors>
+		<Company>mrrazor22</Company>
+		<Description>A fast, .NET port of the Drain log parser (LogPai) with improvements for unique event patterns, parameter extraction, and strong typing.</Description>
+		<PackageProjectUrl>https://github.com/mrrazor22/draindotnet</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/mrrazor22/draindotnet</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageTags>logs parser drain clustering machine-learning logparser template-mining</PackageTags>
+		<Title>DrainDotNet</Title>
+		<PackAsTool>False</PackAsTool>
+		<Copyright>© 2025 mrrazor22</Copyright>
+		<PackageIcon>icon.png</PackageIcon>
+		<PackageId>DrainDotNet</PackageId>
+		<Version>1.0.0</Version>
+		<Authors>mrrazor22</Authors>
+		<Company>mrrazor22</Company>
+		<Description>A fast, .NET port of the Drain log parser (LogPai) with improvements for unique event patterns, parameter extraction, and strong typing.</Description>
+		<PackageProjectUrl>https://github.com/mrrazor22/draindotnet</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/mrrazor22/draindotnet</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageTags>logs parser drain clustering machine-learning logparser template-mining</PackageTags>
+		<Title>DrainDotNet</Title>
+		<PackAsTool>False</PackAsTool>
+		<Copyright>© 2025 mrrazor22</Copyright>
+
+		<PackageIcon>icon.png</PackageIcon>
 	</PropertyGroup>
 
+	<!-- Include license + readme -->
+	<ItemGroup>
+		<None Include="..\LICENSE.txt" Pack="true" PackagePath="" />
+		<None Include="..\README.md" Pack="true" PackagePath="" />
+	</ItemGroup>
+
+	<!-- Dependencies -->
 	<ItemGroup>
 		<PackageReference Include="CsvHelper" Version="27.2.1" />
+	</ItemGroup>
+
+	<!-- Explicitly exclude demo/test folders from packaging -->
+	<ItemGroup>
+		<None Remove="..\SampleApp\data\**" />
+		<None Remove="..\SampleApp\result\**" />
+	</ItemGroup>
+	<ItemGroup>
+		<None Update="icon.png">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
 	</ItemGroup>
 
 </Project>
