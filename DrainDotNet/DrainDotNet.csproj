@@ -42,8 +42,9 @@
 
 	<!-- Include license + readme -->
 	<ItemGroup>
-		<None Include="..\LICENSE.txt" Pack="true" PackagePath="" />
-		<None Include="..\README.md" Pack="true" PackagePath="" />
+		<None Include="..\icon.png" Pack="true" PackagePath="" Link="icon.png" />
+		<None Include="..\LICENSE.txt" Pack="true" PackagePath="" Link="LICENSE.txt" />
+		<None Include="..\README.md" Pack="true" PackagePath="" Link="README.md" />
 	</ItemGroup>
 
 	<!-- Dependencies -->
@@ -55,12 +56,6 @@
 	<ItemGroup>
 		<None Remove="..\SampleApp\data\**" />
 		<None Remove="..\SampleApp\result\**" />
-	</ItemGroup>
-	<ItemGroup>
-		<None Update="icon.png">
-			<Pack>True</Pack>
-			<PackagePath>\</PackagePath>
-		</None>
 	</ItemGroup>
 
 </Project>

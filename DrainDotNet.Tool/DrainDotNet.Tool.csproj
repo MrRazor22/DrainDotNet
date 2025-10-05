@@ -10,7 +10,7 @@
 		<PackAsTool>true</PackAsTool>
 		<ToolCommandName>draindotnet</ToolCommandName>
 		<PackageId>DrainDotNet.Tool</PackageId>
-		<Version>1.0.0</Version>
+		<Version>1.0.1</Version>
 		<Authors>Senthil V</Authors>
 		<Company>Senthil V</Company>
 		<Description>Command-line tool for parsing logs with DrainDotNet</Description>
@@ -37,9 +37,10 @@
 
 	<!-- Package assets -->
 	<ItemGroup>
-		<None Include="..\LICENSE.txt" Pack="true" PackagePath="" />
-		<None Include="..\README.md" Pack="true" PackagePath="" />
-		<None Include="..\icon.png" Pack="true" PackagePath="" />
+		<None Include="..\icon.png" Pack="true" PackagePath="" Link="icon.png" />
+		<None Include="..\LICENSE.txt" Pack="true" PackagePath="" Link="LICENSE.txt" />
+		<None Include="..\README.md" Pack="true" PackagePath="" Link="README.md" />
 	</ItemGroup>
+
 
 </Project>
