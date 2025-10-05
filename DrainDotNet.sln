@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrainDotNet", "DrainDotNet\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleApp", "SampleApp\SampleApp.csproj", "{B9416633-1EFC-481B-886E-B5A6C0BDD78C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrainDotNet.Tool", "DrainDotNet.Tool\DrainDotNet.Tool.csproj", "{0167E968-92A9-58EF-64C7-5B5F40D8E2B2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{B9416633-1EFC-481B-886E-B5A6C0BDD78C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B9416633-1EFC-481B-886E-B5A6C0BDD78C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B9416633-1EFC-481B-886E-B5A6C0BDD78C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0167E968-92A9-58EF-64C7-5B5F40D8E2B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0167E968-92A9-58EF-64C7-5B5F40D8E2B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0167E968-92A9-58EF-64C7-5B5F40D8E2B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0167E968-92A9-58EF-64C7-5B5F40D8E2B2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

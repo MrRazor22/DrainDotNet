@@ -1,17 +1,17 @@
 EventId,EventTemplate,Occurrences
-dc2c74b7,"PacketResponder <*> for block <*> terminating",311
-5d5de21c,"BLOCK* NameSystem.addStoredBlock: blockMap updated: <*> is added to <*> size <*>",314
-e3df2680,"Received block <*> of size <*> from <*>",292
-09a53393,"Receiving block <*> src: <*> dest: <*>",292
+d58a26f6,"PacketResponder <*> for block blk_<*> terminating",311
+b9fc36e7,"BLOCK* NameSystem.addStoredBlock: blockMap updated: <*> is added to blk_<*> size <*>",314
+60033201,"Received block blk_<*> of size <*> from <*>",292
+da97a68a,"Receiving block blk_<*> src: <*> dest: <*>",292
 3d91fa85,"BLOCK* NameSystem.allocateBlock: <*> <*>",115
 32777b38,"Verification succeeded for <*>",20
-dba996ef,"Deleting block <*> file <*>",263
-626085d5,"<*> Served block <*> to <*>",80
-81cee340,"<*>Got exception while serving <*> to <*>",80
-d63ef163,"BLOCK* NameSystem.delete: <*> is added to invalidSet of <*>",224
-40651754,"<*> Starting thread to transfer block <*> to <*>",1
+292627c9,"Deleting block blk_<*> file <*>",263
+9296862b,"<*> Served block blk_<*> to <*>",80
+60f2f750,"<*>Got exception while serving blk_<*> to <*>",80
+2c905c46,"BLOCK* NameSystem.delete: blk_<*> is added to invalidSet of <*>",224
+862de2c2,"<*> Starting thread to transfer block blk_<*> to <*>",1
 04137b95,"BLOCK* ask <*> to delete <*>",2
-d6b7b743,"Received block <*> src: <*> dest: <*> of size <*>",2
-98012f03,"BLOCK* ask <*> to delete <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*>",2
-728076ac,"BLOCK* ask <*> to replicate <*> to datanode(s) <*>",1
-415a1760,"BLOCK* ask <*> to delete <*> <*> <*> <*> <*> <*> <*> <*> <*>",1
+f82d3b1f,"Received block blk_<*> src: <*> dest: <*> of size <*>",2
+d3f9b9e4,"BLOCK* ask <*> to delete blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_-<*>",2
+a83a8cd0,"BLOCK* ask <*> to replicate blk_<*> to datanode(s) <*>",1
+2905572f,"BLOCK* ask <*> to delete blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*> blk_<*>",1

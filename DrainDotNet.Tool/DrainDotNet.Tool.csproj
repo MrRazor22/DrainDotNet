@@ -1,10 +1,45 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+
+		<!-- Tool packaging -->
+		<PackAsTool>true</PackAsTool>
+		<ToolCommandName>draindotnet</ToolCommandName>
+		<PackageId>DrainDotNet.Tool</PackageId>
+		<Version>1.0.0</Version>
+		<Authors>Senthil V</Authors>
+		<Company>Senthil V</Company>
+		<Description>Command-line tool for parsing logs with DrainDotNet</Description>
+		<PackageProjectUrl>https://github.com/mrrazor22/draindotnet</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/mrrazor22/draindotnet</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageTags>logs parser drain clustering logparser templates cli</PackageTags>
+		<Title>DrainDotNet.Tool</Title>
+		<Copyright>© 2025 Senthil V</Copyright>
+		<PackageIcon>icon.png</PackageIcon>
+	</PropertyGroup>
+
+	<!-- Dev-time reference -->
+	<ItemGroup Condition="'$(Configuration)'=='Debug'">
+		<ProjectReference Include="..\DrainDotNet\DrainDotNet.csproj" />
+	</ItemGroup>
+
+	<!-- Release/pack-time: depend on NuGet package -->
+	<ItemGroup Condition="'$(Configuration)'=='Release'">
+		<PackageReference Include="DrainDotNet" Version="1.0.0" />
+	</ItemGroup>
+
+	<!-- Package assets -->
+	<ItemGroup>
+		<None Include="..\LICENSE.txt" Pack="true" PackagePath="" />
+		<None Include="..\README.md" Pack="true" PackagePath="" />
+		<None Include="..\icon.png" Pack="true" PackagePath="" />
+	</ItemGroup>
 
 </Project>

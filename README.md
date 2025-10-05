@@ -56,7 +56,7 @@ draindotnet parse --log <logFile> --format "<LogFormat>" [--indir <inputDir>] [-
 ```
 ## Example (HDFS sample)
 ```sh
-draindotnet parse --log HDFS.log --format "<Date> <Time> <Pid> <Level> <Component> <Content>" --indir ./data/ --out ./result/
+draindotnet parse --log HDFS_2k.log --format "<Date> <Time> <Pid> <Level> <Component>: <Content>" --indir ./SampleApp/data/loghub_2k/HDFS --out ./SampleApp/result
 ```
 
 This will generate:
