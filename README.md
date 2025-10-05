@@ -37,11 +37,31 @@ DrainDotNet is a C# port and improvement of [LogPai’s Drain log parser](https:
 	var parsedLogs = parser.Parse("HDFS.log");
 
 	// Parse logs but keep results in memory only
-	var parsedInMemory = parser.Parse("HDFS.log", autoSave: true);
+	var parsedInMemory = parser.Parse("HDFS.log", autoSave: false);
 
 	// Reload results later (if auto saved) from saved CSVs
 	var reloaded = parser.ReloadResults("HDFS.log");
 	```
+
+## Using as a CLI Tool **(new)**
+DrainDotNet is also available as a .NET global tool, so you can parse logs directly from the command line without writing code.
+
+### Install
+```sh
+dotnet tool install -g DrainDotNet.Tool
+```
+### Usage
+```sh
+draindotnet parse --log <logFile> --format "<LogFormat>" [--indir <inputDir>] [--out <outputDir>]
+```
+## Example (HDFS sample)
+```sh
+draindotnet parse --log HDFS.log --format "<Date> <Time> <Pid> <Level> <Component> <Content>" --indir ./data/ --out ./result/
+```
+
+This will generate:
+- HDFS_2k.log_structured.csv → structured logs with parameters
+- HDFS_2k.log_templates.csv → unique log templates with counts
 
 ## License
 Apache 2.0 (same as the original Drain).
