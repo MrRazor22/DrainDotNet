@@ -13,13 +13,15 @@
 		<Version>1.0.1</Version>
 		<Authors>Senthil V</Authors>
 		<Company>Senthil V</Company>
-		<Description>Command-line tool for parsing logs with DrainDotNet</Description>
+		<Description>Command-line tool for parsing logs with mining using the Drain algorithm. Built on DrainDotNet, it clusters raw logs into structured templates for log analysis, anomaly detection, monitoring, and observability.</Description>
 		<PackageProjectUrl>https://github.com/mrrazor22/draindotnet</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/mrrazor22/draindotnet</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<PackageTags>logs parser drain clustering logparser templates cli</PackageTags>
+		<PackageTags>
+			logs log-parser log-analysis drain clustering logparser template-mining structured-logs cli tool machine-learning ai anomaly-detection monitoring observability devops operations parsing big-data
+		</PackageTags>
 		<Title>DrainDotNet.Tool</Title>
 		<Copyright>© 2025 Senthil V</Copyright>
 		<PackageIcon>icon.png</PackageIcon>

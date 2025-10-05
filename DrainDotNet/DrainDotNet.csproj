@@ -8,39 +8,25 @@
 
 		<!-- NuGet metadata -->
 		<PackageId>DrainDotNet</PackageId>
-		<Version>1.0.0</Version>
-		<Authors>mrrazor22</Authors>
-		<Company>mrrazor22</Company>
+		<Version>1.0.1</Version>
+		<Authors>Senthil V</Authors>
+		<Company>Senthil V</Company>
 		<Description>A fast, .NET port of the Drain log parser (LogPai) with improvements for unique event patterns, parameter extraction, and strong typing.</Description>
 		<PackageProjectUrl>https://github.com/mrrazor22/draindotnet</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/mrrazor22/draindotnet</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<PackageTags>logs parser drain clustering machine-learning logparser template-mining</PackageTags>
+		<PackageTags>
+			logs log-parser log-analysis drain clustering logparser template-mining machine-learning ai anomaly-detection monitoring observability devops operations structured-logs parsing big-data
+		</PackageTags>
 		<Title>DrainDotNet</Title>
 		<PackAsTool>False</PackAsTool>
 		<Copyright>© 2025 mrrazor22</Copyright>
-		<PackageIcon>icon.png</PackageIcon>
-		<PackageId>DrainDotNet</PackageId>
-		<Version>1.0.0</Version>
-		<Authors>mrrazor22</Authors>
-		<Company>mrrazor22</Company>
-		<Description>A fast, .NET port of the Drain log parser (LogPai) with improvements for unique event patterns, parameter extraction, and strong typing.</Description>
-		<PackageProjectUrl>https://github.com/mrrazor22/draindotnet</PackageProjectUrl>
-		<RepositoryUrl>https://github.com/mrrazor22/draindotnet</RepositoryUrl>
-		<RepositoryType>git</RepositoryType>
-		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
-		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<PackageTags>logs parser drain clustering machine-learning logparser template-mining</PackageTags>
-		<Title>DrainDotNet</Title>
-		<PackAsTool>False</PackAsTool>
-		<Copyright>© 2025 mrrazor22</Copyright>
-
 		<PackageIcon>icon.png</PackageIcon>
 	</PropertyGroup>
 
-	<!-- Include license + readme -->
+	<!-- Include license + readme + icon -->
 	<ItemGroup>
 		<None Include="..\icon.png" Pack="true" PackagePath="" Link="icon.png" />
 		<None Include="..\LICENSE.txt" Pack="true" PackagePath="" Link="LICENSE.txt" />
